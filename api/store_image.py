@@ -92,29 +92,26 @@ class ImageStorage(object):
                 image.save(fp)
                 image_type = check_image(fp)
                 if image_type and image_type in self.app.config['_IMAGE_EXTENSIONS']:
-                    self.add_item(image.filename, fp)
+                    self.add_item(image.filename, fp, image_type)
                     # self.app.logger.debug('image added: %s' % image)
             finally:
                 os.close(fd)
                 os.remove(fp)
 
-    def add_item(self, file_name, temp_file_path):
+    def add_item(self, original_file_name, temp_file_path, file_type):
         """
-        save file to temp location, insert to mongodb and move to storage location
+        name file as it content hex md5 representation, insert info into mongodb and move to storage location
         :param file_name: name of file
         """
         file_doc = self.document_template()
+        hashed_content = get_md5(temp_file_path)
+        file_name = secure_filename('.'.join((hashed_content, file_type)))
+        file_path = os.path.join(self._upload_path, file_name)
 
-        file_doc['original_filename'] = file_name
-
-        file_doc['md5'] = get_md5(temp_file_path)
-
-        file_name = '.'.join((file_doc['md5'], file_doc['original_filename'].split('.')[-1]))
-        file_doc['file_name'] = secure_filename(file_name)
-
+        file_doc['original_filename'] = original_file_name
+        file_doc['md5'] = hashed_content
+        file_doc['file_name'] = file_name
         file_doc['path'] = '%s/%s' % (self.app.config['_RAW_IMAGE_ROUTE'], file_name)
-
-        file_path = os.path.join(self._upload_path, file_doc['file_name'])
 
         collection = self.get_collection(self.app.config['_COLLECTION'])
         item_id = collection.insert_one(file_doc).inserted_id
