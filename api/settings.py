@@ -3,7 +3,7 @@
 """
 
 images = {
-    'resource_methods': ['GET'],
+    'resource_methods': ['GET', 'POST'],
     'item_methods': ['GET'],
     # 'allow_unknown': True,
     'datasource': {
@@ -51,7 +51,9 @@ images = {
 MONGO_HOST = 'localhost'
 MONGO_PORT = 27017
 
-MONGO_DBNAME = 'apitest'
+MONGO_DBNAME = 'image_storage'
+_MONGO_DBNAME_TEST = 'test_image_storage'
+
 
 # Skip these if your db has no auth. But it really should.
 # MONGO_USERNAME = '<your username>'

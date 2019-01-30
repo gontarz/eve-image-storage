@@ -29,7 +29,6 @@ class ImageStorage(object):
         retrieve class-specific settings.
         """
         self.app = app
-        self._upload_path = self.app.config['_UPLOAD_DIRECTORY']
         self.validate()
         self._images_collection = {}
 
@@ -44,6 +43,7 @@ class ImageStorage(object):
         if not isinstance(self.app, Flask):
             raise TypeError('Application object must be a Eve application')
 
+        self._upload_path = self.app.config['_UPLOAD_DIRECTORY']
         if not self._upload_path:
             raise KeyError('_UPLOAD_DIRECTORY is not configured on app settings')
 
@@ -87,16 +87,18 @@ class ImageStorage(object):
         :param images: list of werkzeug file-like objects
         """
         for image in images:
-            fd, fp = tempfile.mkstemp()
+            fd, temp_file_path = tempfile.mkstemp()
             try:
-                image.save(fp)
-                image_type = check_image(fp)
+                image.save(temp_file_path)
+                image_type = check_image(temp_file_path)
                 if image_type and image_type in self.app.config['_IMAGE_EXTENSIONS']:
-                    self.add_item(image.filename, fp, image_type)
+                    file_path = self.add_item(image.filename, temp_file_path, image_type)
+                    if file_path:
+                        copy(temp_file_path, file_path)
                     # self.app.logger.debug('image added: %s' % image)
             finally:
                 os.close(fd)
-                os.remove(fp)
+                os.remove(temp_file_path)
 
     def add_item(self, original_file_name, temp_file_path, file_type):
         """
@@ -119,7 +121,7 @@ class ImageStorage(object):
         item_id = collection.insert_one(file_doc).inserted_id
         # app.logger.debug(item_id)
 
-        copy(temp_file_path, file_path)
+        return file_path
 
     def store(self, file):
         """
