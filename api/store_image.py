@@ -101,7 +101,9 @@ class ImageStorage(object):
     def add_item(self, original_file_name, temp_file_path, file_type):
         """
         name file as it content hex md5 representation, insert info into mongodb and move to storage location
-        :param file_name: name of file
+        :param original_file_name
+        :param temp_file_path
+        :param file_type
         """
         file_doc = self.document_template()
         hashed_content = get_md5(temp_file_path)
@@ -145,7 +147,7 @@ class ImageStorage(object):
 
 def allowed_file(filename, extensions):
     """
-    chceck if file extension i  in allowed extensions
+    chceck if file extension is in allowed extensions
     :param filename: name of file
     :param extensions: allowed files extensions
     :return: True if extension is correct else False
