@@ -10,8 +10,9 @@ from flask import request, redirect, url_for, flash, send_from_directory
 from api.store_image import ImageStorage
 
 
-def create_app():
-    settings = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'settings.py')
+def create_app(settings=None):
+    if settings is None:
+        settings = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'settings.py')
     app = Eve(__name__, settings=settings)
     app.secret_key = app.config['_SECRET_KEY']
     return app
@@ -20,6 +21,15 @@ def create_app():
 app = create_app()
 
 images_storage = ImageStorage(app)
+
+
+def insert_event(resource_name, items):
+    print(resource_name)
+    # for i in items:
+    #     i[]
+
+app.on_insert_item += insert_event
+
 
 
 @app.route('/images', methods=['POST'])
