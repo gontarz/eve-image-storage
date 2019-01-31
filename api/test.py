@@ -10,12 +10,13 @@ import types
 import json
 import datetime
 
-# from eve.tests import TestMinimal
+from eve.tests import TestMinimal
 # from eve.tests.endpoints import TestEndPoints
 
 from api.store_image import ImageStorage, allowed_file, read_zip, get_md5
 from api.main import create_app
-from api.settings import _ALLOWED_EXTENSIONS, _IMAGE_EXTENSIONS, _COLLECTION
+from api.settings import _ALLOWED_EXTENSIONS, _IMAGE_EXTENSIONS, _COLLECTION, _MONGO_DBNAME_TEST
+from api.tests.test_settings import test_sets
 
 from werkzeug.datastructures import FileStorage
 from zipfile import ZipFile
@@ -67,11 +68,11 @@ class TestStorageMethods(unittest.TestCase):
 
     def test1_get_md5(self):
         cwd = os.getcwd()
-        self.assertEqual(get_md5(cwd + '/tests/test1.jpeg'), get_md5(cwd + '/tests/test1.jpeg'))
+        self.assertEqual(get_md5(cwd + '/tests/c29bb130a677fc8e3a3fe66221eec68e.jpeg'), get_md5(cwd + '/tests/c29bb130a677fc8e3a3fe66221eec68e.jpeg'))
 
     def test2_get_md5(self):
         cwd = os.getcwd()
-        self.assertNotEqual(get_md5(cwd + '/tests/test1.jpeg'), get_md5(cwd + '/tests/test2.jpeg'))
+        self.assertNotEqual(get_md5(cwd + '/tests/c29bb130a677fc8e3a3fe66221eec68e.jpeg'), get_md5(cwd + '/tests/6dddeade02138cb1b0f035f692580c98.jpeg'))
 
     # def test1_add_item(self):
     #     my_app = create_app()
@@ -111,12 +112,11 @@ class TestStorageMethods(unittest.TestCase):
     #         self.assertEqual(f, files[i])
 
 
-class ClientAppsTests(unittest.TestCase):
+class TestMongoDb(unittest.TestCase):
     def setUp(self):
-        my_app = create_app()
+        test_settings = test_sets
 
-        my_app.config['MONGO_DBNAME'] = my_app.config['_MONGO_DBNAME_TEST']
-        my_app.config['TESTING'] = True
+        my_app = create_app(test_settings)
 
         client = MongoClient(my_app.config['MONGO_HOST'], my_app.config['MONGO_PORT'])
 
@@ -126,12 +126,13 @@ class ClientAppsTests(unittest.TestCase):
         self.config = my_app.config
 
         # new_app = dict()
-        # self.db.client_apps.insert(new_app)
-
+        # self.db.images.insert(new_app)
         # self.image_storage = ImageStorage(my_app)
 
     def tearDown(self):
-        self.db.client_apps.remove()
+        self.db.images.remove()
+        # self.db.dropDatabase()
+        pass
 
     def test1_connection(self):
         res = self.app.get('/')
@@ -146,6 +147,12 @@ class ClientAppsTests(unittest.TestCase):
         assert res.status_code == 404
 
     def test_empty_db_response(self):
+        resp = self.app.get('/%s' % _COLLECTION)
+        resp_obj = json.loads(resp.get_data())
+
+        self.assertEqual(resp_obj.get('_items'), [])
+
+    def test_root_response(self):
         resp = self.app.get('/')
         resp_obj = json.loads(resp.get_data())
 
@@ -153,8 +160,8 @@ class ClientAppsTests(unittest.TestCase):
             "_links": {
                 "child": [
                     {
-                        "href": "images",
-                        "title": "images"
+                        "href": "%s" % _COLLECTION,
+                        "title": "%s" % _COLLECTION
                     }
                 ]
             }
@@ -162,33 +169,15 @@ class ClientAppsTests(unittest.TestCase):
 
         self.assertEqual(resp_obj, expect)
 
-    # def test_doc_insert(self):
-    #     data = {
-    #         "file_name": "c29bb130a677fc8e3a3fe66221eec68e.jpeg",
-    #         "path": "images/raw/c29bb130a677fc8e3a3fe66221eec68e.jpeg",
-    #         "_links": {
-    #             "self": {
-    #                 "title": "Image",
-    #                 "href": "images/5c5215e8a6877f7ec6662002"
-    #             }
-    #         }
-    #     }
-    #     cwd = os.getcwd()
-    #     test_img = open(cwd + '/tests/test1.jpeg', "rb")
-    #
-    #     # my_data['file'] = test_img
-    #
-    #     img_data = (io.BytesIO(test_img.read()), 'test1.jpeg')
-    #
-    #
-    #     resp = self.app.post('/%s' % _COLLECTION, data={'file':img_data}, follow_redirects=True, content_type='multipart/form-data')
-    #
+    # def test_not_valid_isert(self):
+    #     resp = self.app.post('/%s' % _COLLECTION, data={'a': 'b'}, follow_redirects=True)
     #     resp_obj = json.loads(resp.get_data())
-    #
-    #     item = resp_obj['_items'][0]
-    #
-    #     mybool = all([v==item[k] for k,v in data])
-    #     self.assertTrue(mybool)
+    #     print(resp_obj)
+    #     self.assertEqual(resp_obj.get('_status'), 'ERR')
+
+
+class TestMyapp(TestMinimal):
+    pass
 
 
 if __name__ == '__main__':
