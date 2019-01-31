@@ -23,15 +23,6 @@ app = create_app()
 images_storage = ImageStorage(app)
 
 
-def insert_event(resource_name, items):
-    print(resource_name)
-    # for i in items:
-    #     i[]
-
-app.on_insert_item += insert_event
-
-
-
 @app.route('/images', methods=['POST'])
 def upload_file():
     """
