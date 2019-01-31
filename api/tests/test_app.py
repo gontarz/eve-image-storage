@@ -56,7 +56,8 @@ def test_doc_insert(client):
     test_zip = open(cwd + '/api/tests/test_imgs.zip', 'rb')
 
     data = {'file': test_zip}
-    resp = client.post('/%s' % test_sets['_COLLECTION'], data=data, follow_redirects=True, content_type='multipart/form-data')
+    resp = client.post('/%s' % test_sets['_COLLECTION'], data=data, follow_redirects=True,
+                       content_type='multipart/form-data')
 
     resp_obj = json.loads(resp.get_data())
 
@@ -67,7 +68,6 @@ def test_doc_insert(client):
     assert mybool is True
     name1 = '/c29bb130a677fc8e3a3fe66221eec68e.jpeg'
     name2 = '/6dddeade02138cb1b0f035f692580c98.jpeg'
-
 
     # resp = client.get('/%s/%s' % (test_sets['_RAW_IMAGE_ROUTE'], name1))
     # assert resp.status_code == 200
