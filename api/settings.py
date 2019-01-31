@@ -3,7 +3,7 @@
 """
 
 images = {
-    'resource_methods': ['GET', 'POST'],
+    'resource_methods': ['GET'],
     'item_methods': ['GET'],
     # 'allow_unknown': True,
     'datasource': {
