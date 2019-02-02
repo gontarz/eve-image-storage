@@ -10,7 +10,7 @@ import imghdr
 from shutil import copy
 from zipfile import ZipFile
 
-from flask import Flask
+from flask import Flask, abort, redirect, url_for
 from werkzeug.utils import secure_filename
 from werkzeug.datastructures import FileStorage
 from eve.io.mongo import Mongo
@@ -123,14 +123,30 @@ class ImageStorage(object):
 
         return file_path
 
-    def store(self, file):
+    # def store(self, file):
+    #     """
+    #     main method to store image
+    #     :param file: file-like object
+    #     """
+    #     images = self.process_source(file)
+    #     self.add_items(images)
+    #     return True
+
+    def hook_it(self, resource, request):
         """
-        main method to store image
-        :param file: file-like object
+        hook pre_POST image post request, perform file insert process, abort orginal request process
         """
+        file_key = self.app.config['_FILE_KEY']
+        if file_key not in request.files:
+            abort(422)
+
+        file = request.files[file_key]
         images = self.process_source(file)
+        if not images:
+            abort(415)
+
         self.add_items(images)
-        return True
+        abort(redirect(url_for('%s|resource' % resource)))
 
     @staticmethod
     def document_template():
@@ -157,13 +173,13 @@ def allowed_file(filename, extensions):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in extensions
 
 
-def check_image(file_path):
+def check_image(file_path, content = None):
     """
     Tests the image data contained in the file named by filename, and returns a string describing the image type.
     :param file_path: filepath
     :return: image type str or None
     """
-    return imghdr.what(file_path)
+    return imghdr.what(file_path, content)
 
 
 def get_md5(file_path):
@@ -185,7 +201,7 @@ def read_zip(file, allowed):
     read zip and for allowed files returns file-like objects generator
     :param file:
     :param allowed: allowed extensions
-    :return:
+    :return: file-like objects generator
     """
     with ZipFile(file) as myzip:
         for name in myzip.namelist():

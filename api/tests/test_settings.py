@@ -2,12 +2,13 @@
 """
 """
 
-from ..settings import _MONGO_DBNAME_TEST, _COLLECTION, _RAW_IMAGE_ROUTE, _FILE_KEY, _UPLOAD_DIRECTORY
+from ..settings import _MONGO_DBNAME_TEST, _COLLECTION, _RAW_IMAGE_ROUTE, _FILE_KEY, _UPLOAD_DIRECTORY,\
+    _ALLOWED_EXTENSIONS, _ZIP_EXTENSIONS, _IMAGE_EXTENSIONS
 
 test_sets = {
     'DOMAIN': {
         'images': {
-            'resource_methods': ['GET'],
+            'resource_methods': ['GET', 'POST'],
             # 'item_methods': ['GET'],
             # 'allow_unknown': True,
             # 'datasource': {
@@ -48,6 +49,10 @@ test_sets = {
     '_COLLECTION': _COLLECTION,
     '_RAW_IMAGE_ROUTE': _RAW_IMAGE_ROUTE,
     '_FILE_KEY': _FILE_KEY,
-    '_UPLOAD_DIRECTORY': _UPLOAD_DIRECTORY
+    '_UPLOAD_DIRECTORY': _UPLOAD_DIRECTORY,
+    '_ALLOWED_EXTENSIONS': _ALLOWED_EXTENSIONS,
+    '_ZIP_EXTENSIONS': _ZIP_EXTENSIONS,
+    '_IMAGE_EXTENSIONS': _IMAGE_EXTENSIONS
+
 
 }

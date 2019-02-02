@@ -3,13 +3,14 @@
 """
 
 images = {
-    'resource_methods': ['GET'],
+    'resource_methods': ['GET', 'POST'],
     'item_methods': ['GET'],
     # 'allow_unknown': True,
     'datasource': {
         'projection': {
             'md5': 0,
-            'original_filename': 0
+            'original_filename': 0,
+            'file': 0
         }
     },
     'additional_lookup': {
@@ -23,14 +24,14 @@ images = {
         'original_filename': {
             'type': 'string'
         },
-        'upload_date': {
-            'type': 'datetime'
-        },
         'file_name': {
             'type': 'string'
         },
         'path': {
             'type': 'string'
+        },
+        'file': {
+            'type': 'media'
         }
     }
 }
@@ -53,7 +54,6 @@ MONGO_PORT = 27017
 
 MONGO_DBNAME = 'image_storage'
 _MONGO_DBNAME_TEST = 'test_image_storage'
-
 
 # Skip these if your db has no auth. But it really should.
 # MONGO_USERNAME = '<your username>'

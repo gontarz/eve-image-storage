@@ -19,3 +19,8 @@ Start server
 ```
   ./bin/run.sh start
 ```
+
+Relase
+======
+
+- **0.1.0**: hook pre POST to insert image

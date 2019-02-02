@@ -99,15 +99,17 @@ class TestStorageMethods(unittest.TestCase):
 
     # def test_read_zip(self):
     #     cwd = os.getcwd()
-    #     test_zip = open(cwd+'/tests/test_imgs.zip')
-    #     file = FileStorage(stream=test_zip, filename='test_imgs.zip')
+    #     # test_zip = open(cwd+'/tests/test_imgs.zip', 'rb')
+    #     # file = FileStorage(stream=test_zip, filename='test_imgs.zip')
     #     file=cwd + '/tests/test_imgs.zip'
     #     gen = read_zip(file, _ALLOWED_EXTENSIONS)
-    #     test_file1 = open(cwd+'/tests/test1.jpeg')
-    #     test_file2 = open(cwd + '/tests/test2.jpeg')
+    #     test_file1 = open(cwd+'/tests/c29bb130a677fc8e3a3fe66221eec68e.jpeg', 'rb')
+    #     test_file2 = open(cwd + '/tests/6dddeade02138cb1b0f035f692580c98.jpeg', 'rb')
     #
-    #     files = [FileStorage(stream=test_file1.read(), filename='test1.jpeg'),
-    #              FileStorage(stream=test_file2.read(), filename='test2.jpeg')]
+    #     files = [
+    #         FileStorage(stream=test_file2.read(), filename='6dddeade02138cb1b0f035f692580c98.jpeg'),
+    #         FileStorage(stream=test_file1.read(), filename='c29bb130a677fc8e3a3fe66221eec68e.jpeg'),
+    #              ]
     #     for i, f in enumerate(gen):
     #         self.assertEqual(f, files[i])
 

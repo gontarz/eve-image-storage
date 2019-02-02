@@ -60,6 +60,7 @@ class TestClass(object):
 
         resp_obj = json.loads(resp.get_data())
 
+        # print(resp_obj)
         item = resp_obj['_items'][1]
 
         mybool = all([v == item[k] for k, v in test_data.items()])
