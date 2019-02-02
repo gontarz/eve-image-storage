@@ -16,35 +16,34 @@ def create_app(settings=None):
     app = Eve(__name__, settings=settings)
     app.secret_key = app.config['_SECRET_KEY']
 
-
     @app.route('/images', methods=['POST'])
     def upload_file():
         """
         uploads images to destination directory and insert images info to mongodb
         """
+        info = '''
+            <!doctype html>
+            <title>Upload new File</title>
+            <h1>Upload new File</h1>
+            <form method=post enctype=multipart/form-data>
+                <p><input type=file name=file>
+                <input type=submit value=Upload>
+            </form>
+            '''
+        file_key = app.config['_FILE_KEY']
+
         if request.method == 'POST':
             # check if the post request has the file part
-            if 'file' not in request.files:
-                flash('No file part')
-                return redirect(request.url)
-            file = request.files[app.config['_FILE_KEY']]
+            if file_key not in request.files:
+                return info
+            file = request.files[file_key]
             # if user does not select file, browser also
             # submit a empty part without filename
-            if file.filename == '':
-                flash('No selected file')
-                return redirect(request.url)
+            if not file.filename:
+                return info
             if images_storage.store(file):
                 return redirect(url_for('%s|resource' % app.config['_COLLECTION']))
-        return '''
-        <!doctype html>
-        <title>Upload new File</title>
-        <h1>Upload new File</h1>
-        <form method=post enctype=multipart/form-data>
-          <p><input type=file name=file>
-             <input type=submit value=Upload>
-        </form>
-        '''
-
+        return info
 
     @app.route('/%s/<filename>' % app.config['_RAW_IMAGE_ROUTE'])
     def uploaded_file(filename):
@@ -61,7 +60,6 @@ def create_app(settings=None):
 app = create_app()
 
 images_storage = ImageStorage(app)
-
 
 if __name__ == '__main__':
     app.run(debug=True)
