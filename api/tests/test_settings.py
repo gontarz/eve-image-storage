@@ -2,7 +2,7 @@
 """
 """
 
-from ..settings import _MONGO_DBNAME_TEST, _COLLECTION, _RAW_IMAGE_ROUTE, _FILE_KEY
+from ..settings import _MONGO_DBNAME_TEST, _COLLECTION, _RAW_IMAGE_ROUTE, _FILE_KEY, _UPLOAD_DIRECTORY
 
 test_sets = {
     'DOMAIN': {
@@ -47,6 +47,7 @@ test_sets = {
     '_SECRET_KEY': 'xyz',
     '_COLLECTION': _COLLECTION,
     '_RAW_IMAGE_ROUTE': _RAW_IMAGE_ROUTE,
-    '_FILE_KEY': _FILE_KEY
+    '_FILE_KEY': _FILE_KEY,
+    '_UPLOAD_DIRECTORY': _UPLOAD_DIRECTORY
 
 }
