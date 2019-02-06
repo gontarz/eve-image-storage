@@ -74,44 +74,32 @@ class TestStorageMethods(unittest.TestCase):
         cwd = os.getcwd()
         self.assertNotEqual(get_md5(cwd + '/tests/c29bb130a677fc8e3a3fe66221eec68e.jpeg'), get_md5(cwd + '/tests/6dddeade02138cb1b0f035f692580c98.jpeg'))
 
-    # def test1_add_item(self):
-    #     my_app = create_app()
-    #     my_app = my_app.test_client()
-    #     my_app.config['MONGO_DBNAME'] = my_app.config['_MONGO_DBNAME_TEST']
-    #
-    #     client = MongoClient(my_app.config['MONGO_HOST'], my_app.config['MONGO_PORT'])
-    #
-    #     db = client[my_app.config['MONGO_DBNAME']]
-    #
-    #     image_storage = ImageStorage(my_app)
-    #     pass
 
-    # def test_get_collection(self):
-    #     my_app = create_app()
-    #     image_storage = ImageStorage(my_app)
-    #     tested_db = image_storage.get_collection(my_app.config['_COLLECTION'])
-    #
-    #     driver = image_storage.app.data
-    #     px = driver.current_mongo_prefix(image_storage.config['_COLLECTION'])
-    #     db = driver.pymongo(prefix=px).db[image_storage.config['_COLLECTION']]
-    #
-    #     self.assertEqual(tested_db, db)
+    def test1_read_zip(self):
+        cwd = os.getcwd()
+        test_zip = open(cwd+'/tests/test_imgs.zip', 'rb')
 
-    # def test_read_zip(self):
-    #     cwd = os.getcwd()
-    #     # test_zip = open(cwd+'/tests/test_imgs.zip', 'rb')
-    #     # file = FileStorage(stream=test_zip, filename='test_imgs.zip')
-    #     file=cwd + '/tests/test_imgs.zip'
-    #     gen = read_zip(file, _ALLOWED_EXTENSIONS)
-    #     test_file1 = open(cwd+'/tests/c29bb130a677fc8e3a3fe66221eec68e.jpeg', 'rb')
-    #     test_file2 = open(cwd + '/tests/6dddeade02138cb1b0f035f692580c98.jpeg', 'rb')
-    #
-    #     files = [
-    #         FileStorage(stream=test_file2.read(), filename='6dddeade02138cb1b0f035f692580c98.jpeg'),
-    #         FileStorage(stream=test_file1.read(), filename='c29bb130a677fc8e3a3fe66221eec68e.jpeg'),
-    #              ]
-    #     for i, f in enumerate(gen):
-    #         self.assertEqual(f, files[i])
+        gen = read_zip(test_zip, _ALLOWED_EXTENSIONS)
+        with open(cwd+'/tests/c29bb130a677fc8e3a3fe66221eec68e.jpeg', 'rb') as f:
+            test_file1 = f.read()
+        with open(cwd + '/tests/6dddeade02138cb1b0f035f692580c98.jpeg', 'rb') as f:
+            test_file2 = f.read()
+
+        files = [
+            FileStorage(stream=test_file2, filename='6dddeade02138cb1b0f035f692580c98.jpeg'),
+            FileStorage(stream=test_file1, filename='c29bb130a677fc8e3a3fe66221eec68e.jpeg'),
+                 ]
+        for i, f in enumerate(gen):
+            # print(f.stream.read(), '\n', files[i].stream)
+            self.assertEqual(f.stream.read(), files[i].stream)
+
+    def test2_read_zip(self):
+        cwd = os.getcwd()
+        test_zip = open(cwd + '/tests/test_imgs.zip', 'rb')
+        allowed_extensions = list()
+        gen = read_zip(test_zip, allowed_extensions)
+        for i in gen:
+            raise FileExistsError
 
 
 class TestMongoDb(unittest.TestCase):
