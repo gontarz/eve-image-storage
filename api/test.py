@@ -15,7 +15,7 @@ from eve.tests import TestMinimal
 
 from api.store_image import ImageStorage, allowed_file, read_zip, get_md5
 from api.main import create_app
-from api.settings import _ALLOWED_EXTENSIONS, _IMAGE_EXTENSIONS, _COLLECTION, _MONGO_DBNAME_TEST
+from api.settings import _ALLOWED_EXTENSIONS, _IMAGE_EXTENSIONS, _COLLECTION
 from api.tests.test_settings import test_sets
 
 from werkzeug.datastructures import FileStorage
@@ -68,19 +68,20 @@ class TestStorageMethods(unittest.TestCase):
 
     def test1_get_md5(self):
         cwd = os.getcwd()
-        self.assertEqual(get_md5(cwd + '/tests/c29bb130a677fc8e3a3fe66221eec68e.jpeg'), get_md5(cwd + '/tests/c29bb130a677fc8e3a3fe66221eec68e.jpeg'))
+        self.assertEqual(get_md5(cwd + '/tests/c29bb130a677fc8e3a3fe66221eec68e.jpeg'),
+                         get_md5(cwd + '/tests/c29bb130a677fc8e3a3fe66221eec68e.jpeg'))
 
     def test2_get_md5(self):
         cwd = os.getcwd()
-        self.assertNotEqual(get_md5(cwd + '/tests/c29bb130a677fc8e3a3fe66221eec68e.jpeg'), get_md5(cwd + '/tests/6dddeade02138cb1b0f035f692580c98.jpeg'))
-
+        self.assertNotEqual(get_md5(cwd + '/tests/c29bb130a677fc8e3a3fe66221eec68e.jpeg'),
+                            get_md5(cwd + '/tests/6dddeade02138cb1b0f035f692580c98.jpeg'))
 
     def test1_read_zip(self):
         cwd = os.getcwd()
-        test_zip = open(cwd+'/tests/test_imgs.zip', 'rb')
+        test_zip = open(cwd + '/tests/test_imgs.zip', 'rb')
 
         gen = read_zip(test_zip, _ALLOWED_EXTENSIONS)
-        with open(cwd+'/tests/c29bb130a677fc8e3a3fe66221eec68e.jpeg', 'rb') as f:
+        with open(cwd + '/tests/c29bb130a677fc8e3a3fe66221eec68e.jpeg', 'rb') as f:
             test_file1 = f.read()
         with open(cwd + '/tests/6dddeade02138cb1b0f035f692580c98.jpeg', 'rb') as f:
             test_file2 = f.read()
@@ -88,7 +89,7 @@ class TestStorageMethods(unittest.TestCase):
         files = [
             FileStorage(stream=test_file2, filename='6dddeade02138cb1b0f035f692580c98.jpeg'),
             FileStorage(stream=test_file1, filename='c29bb130a677fc8e3a3fe66221eec68e.jpeg'),
-                 ]
+        ]
         for i, f in enumerate(gen):
             # print(f.stream.read(), '\n', files[i].stream)
             self.assertEqual(f.stream.read(), files[i].stream)
