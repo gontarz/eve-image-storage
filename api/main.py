@@ -11,16 +11,23 @@ from api.store_image import ImageStorage
 
 
 def create_app(settings=None):
-    if settings is None:
-        settings = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'settings.py')
-    app = Eve(__name__, settings=settings)
-    app.secret_key = app.config['_SECRET_KEY']
-
-    images_storage = ImageStorage(app)
-    app.on_pre_POST += images_storage.hook_it
+    return App(settings).app
 
 
-    @app.route('/%s/<filename>' % app.config['_RAW_IMAGE_ROUTE'])
+class App():
+    def __init__(self, settings=None):
+        if settings is None:
+            settings = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'settings.py')
+
+        self.app = Eve(__name__, settings=settings)
+        self.app.secret_key = self.app.config['_SECRET_KEY']
+
+        images_storage = ImageStorage(self.app)
+        self.app.on_pre_POST += images_storage.hook_it
+
+        self.app.route('/%s/<filename>' % self.app.config['_RAW_IMAGE_ROUTE'])(self.uploaded_file)
+
+    @staticmethod
     def uploaded_file(filename):
         """
         return image
@@ -30,11 +37,7 @@ def create_app(settings=None):
                                    filename)
 
 
-    return app
-
-
 app = create_app()
-
 
 if __name__ == '__main__':
     app.run(debug=True)
